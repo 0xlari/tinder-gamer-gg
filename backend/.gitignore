@@ -1,0 +1,35 @@
+# Ambiente Virtual Python
+venv/
+.venv/
+
+# Cache e arquivos compilados do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Arquivos de configuração de IDEs
+.vscode/
+.idea/
+*.DS_Store
+
+# Banco de Dados SQLite
+*.db
+*.sqlite
+*.sqlite3
+# Se o seu DB estiver dentro de uma pasta específica, ex: backend/instance/
+instance/*.db 
+backend/instance/ # Para cobrir a pasta inteira
+backend/tinder_gamer.db # Garante que o db na pasta backend seja ignorado
+
+# Arquivo de variáveis de ambiente
+.env
+backend/.env 
+
+# Credenciais do Google Cloud (JSON da conta de serviço)
+google_credentials.json
+backend/google_credentials.json 
+
+# Arquivos de sistema operacional
+Thumbs.db
+Desktop.ini

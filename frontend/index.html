@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GG - Seu Guia Gamer!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --trexx-green: #00DC82;
+            --trexx-cyan: #22D3EE;
+            --background-dark: #0A0D12; 
+            --background-dark-gradient-end: #06080A;
+            --card-bg: rgba(20, 25, 35, 0.85); 
+            --input-bg: rgba(30, 35, 45, 0.9);
+            --text-light: #E0E7FF; 
+            --text-medium: #A0AEC0; 
+            --text-dark-on-green: #061A13; /* Renomeado de --text-dark-on-action */
+            --glow-green: rgba(0, 220, 130, 0.7);
+            --glow-cyan: rgba(34, 211, 238, 0.7);
+            --danger-color: #ef4444;
+            --star-default-color: #4A5568; 
+            --star-filled-color: var(--trexx-cyan); /* Usando ciano Trexx para estrelas */
+            --star-hover-color: var(--trexx-green);  /* Usando verde Trexx para hover */
+        }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--background-dark);
+            background-image: linear-gradient(to bottom, var(--background-dark) 0%, var(--background-dark-gradient-end) 100%);
+            color: var(--text-light); display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh; padding: 1rem; overflow-x: hidden;
+        }
+        .container-geral { width: 100%; max-width: 400px; margin: 1rem auto; position: relative; z-index: 1; }
+        .user-header {
+            display: none; justify-content: space-between; align-items: center;
+            padding: 0.5rem 0; margin-bottom: 1rem; 
+            border-bottom: 1px solid rgba(34, 211, 238, 0.2); 
+            width: 100%; 
+        }
+        .user-header #loggedInUserDisplay { font-size: 0.9rem; color: var(--text-medium); }
+        .user-header #loggedInUserDisplay span { font-weight: 700; color: var(--trexx-green); }
+        #logoutButton { 
+            background-color: transparent; color: var(--danger-color); padding: 0.4rem 0.8rem;
+            border-radius: 0.375rem; font-family: 'Rajdhani', sans-serif; font-weight: 600;
+            text-transform: uppercase; font-size: 0.75rem; border: 1px solid var(--danger-color);
+            cursor: pointer; transition: background-color 0.2s, color 0.2s;
+        }
+        #logoutButton:hover { background-color: var(--danger-color); color: white; }
+        
+        .top-container-for-mascot-title {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .mascot-area { width: 180px; height: 180px; margin: 0 auto 1rem auto; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: mascotFloat 6s ease-in-out infinite; position: relative; }
+        .mascot-image-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .mascot-image-container img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
+        @keyframes mascotFloat { 0%, 100% { transform: translateY(0px) rotate(-1deg); } 50% { transform: translateY(-8px) rotate(1deg); } }
+        .mascot-area::after { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; box-shadow: 0 0 40px 8px var(--trexx-green), 0 0 60px 15px var(--trexx-cyan); opacity: 0.65; animation: mascotGlowPulse 3s infinite alternate; z-index: -1;  }
+        @keyframes mascotGlowPulse { from { opacity: 0.5; transform: scale(0.98); } to { opacity: 0.8; transform: scale(1.02); } }
+        
+        .main-title-tagline { /* Este é o título abaixo do mascote */
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem; 
+            color: var(--text-light);
+            text-shadow: 0 0 5px var(--trexx-cyan);
+            text-align: center;
+            margin-bottom: 2.5rem;
+            letter-spacing: 0.05em;
+        }
+        /* Removido .main-title-gg-logo, pois o título é só a tagline agora */
+        
+        .section { display: none; width: 100%; }
+        .section.active { display: block; }
+        .content-box { background-color: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(0, 220, 130, 0.3); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.3); margin-bottom: 1.5rem; }
+        .section-title { font-family: 'Orbitron', sans-serif; font-weight: 700; color: var(--trexx-green); text-shadow: 0 0 10px var(--glow-green); text-align: center; font-size: 1.5rem; margin-bottom: 1.5rem; }
+        
+        .auth-form input, .chat-input-container input { background-color: var(--input-bg); border: 1px solid var(--trexx-cyan); color: var(--text-light); padding: 0.8rem 1rem; border-radius: 0.5rem; width: 100%; box-shadow: inset 0 1px 3px rgba(0,0,0,0.4); transition: border-color 0.3s, box-shadow 0.3s; }
+        .auth-form input:focus, .chat-input-container input:focus { outline: none; border-color: var(--trexx-green); box-shadow: inset 0 1px 3px rgba(0,0,0,0.4), 0 0 10px var(--glow-green); }
+        .auth-form input { margin-bottom: 1rem; }
+        .auth-form button, .chat-input-container button, .btn { font-family: 'Orbitron', sans-serif; background-color: var(--trexx-green); color: var(--text-dark-on-action); padding: 0.8rem 1.5rem; border-radius: 0.5rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.08em; box-shadow: 0 0 12px var(--glow-green); border: none; transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s; }
+        .auth-form button:hover, .chat-input-container button:hover, .btn:hover { background-color: #00FF90; transform: scale(1.03) translateY(-1px); box-shadow: 0 0 18px var(--glow-green), 0 0 25px #00FF90; }
+        .auth-form button { width: 100%; }
+        .chat-input-container button { width: auto; }
+        .auth-link { color: var(--trexx-cyan); cursor: pointer; font-weight: 600; }
+        .auth-link:hover { color: var(--text-light); text-decoration: underline; }
+
+        .chat-window { background-color: rgba(10,13,18,0.7); border: 1px solid var(--trexx-cyan); border-radius: 0.75rem; padding: 1rem; height: 320px; overflow-y: auto; margin-bottom: 1rem; }
+        .chat-message { padding: 0.6rem 1rem; border-radius: 0.75rem; margin-bottom: 0.75rem; max-width: 85%; word-wrap: break-word; line-height: 1.45; font-size: 0.95rem;}
+        .user-message { background-color: var(--trexx-cyan); color: var(--background-dark); margin-left: auto; border-bottom-right-radius: 0.25rem; font-weight: 600; }
+        .bot-message { background-color: var(--trexx-green); color: var(--text-dark-on-action); margin-right: auto; border-bottom-left-radius: 0.25rem; font-weight: 600; }
+        
+        #matchCard { padding: 1.5rem; align-items: center; display: flex; flex-direction: column; }
+        .match-profile-pic { width: 100px; height: 100px; border-radius: 50%; background-color: var(--trexx-cyan); display: flex; align-items: center; justify-content: center; color: var(--background-dark); font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; border: 3px solid var(--trexx-green); box-shadow: 0 0 10px var(--trexx-green); }
+        .match-info-box { background-color: rgba(30, 35, 45, 0.7); border-radius: 0.5rem; padding: 1rem; margin-bottom: 0.75rem; width: 100%; border-left: 3px solid var(--trexx-green); }
+        .match-info-box h3 { color: var(--trexx-cyan); font-weight: 600; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.8rem; }
+        .match-info-box p, .match-info-box span { color: var(--text-light); font-size: 0.9rem; }
+        #matchName { color: var(--text-light); font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.25rem; }
+        #matchGame { color: var(--trexx-green); font-weight: 600; font-size: 1rem; }
+        #matchScore { color: var(--trexx-cyan); font-weight: 900; text-shadow: 0 0 8px var(--glow-cyan); }
+        .btn-accept { /* Herda de .btn */ }
+        .btn-reject { background-color: transparent; color: var(--text-medium); border-color: var(--text-medium) !important; }
+        .btn-reject:hover { background-color: #ef4444; color: white; border-color: #ef4444 !important; }
+        
+        .status-message { min-height: 28px; font-size: 1rem; font-weight: 500; margin-top: 1rem; text-align: center; }
+        .loading-text { color: var(--text-secondary-light); opacity: 0.7; }
+        .error-text { color: #ef4444; font-weight: 600; }
+        .success-text { color: var(--trexx-green); font-weight: 600; text-shadow: 0 0 8px var(--glow-green); }
+        
+        #mutualMatchesSection { /* Estilo da seção de matches mútuos */ }
+        .mutual-match-item { display: flex; flex-direction: column; align-items: flex-start; background-color: rgba(40, 45, 58, 0.7); padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; border: 1px solid var(--trexx-cyan); }
+        .mutual-match-header { display: flex; align-items: center; width: 100%; margin-bottom: 0.75rem; cursor: pointer; }
+        .mutual-match-pic { width: 40px; height: 40px; border-radius: 50%; background-color: var(--trexx-cyan); color: var(--background-dark); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; margin-right: 0.75rem; border: 2px solid var(--trexx-green); flex-shrink: 0; }
+        .mutual-match-info { flex-grow: 1; overflow: hidden; } 
+        .mutual-match-info h4 { font-family: 'Orbitron', sans-serif; color: var(--text-light); font-weight: 600; margin-bottom: 0.1rem; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mutual-match-info p { font-size: 0.75rem; color: var(--text-medium); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .rating-stars-container { display: flex; justify-content: flex-start; margin-top: 0.5rem; margin-bottom: 0.5rem; }
+        .rating-stars-container .star { font-size: 1.25rem; color: var(--star-default-color); margin-right: 0.3rem; cursor: pointer; transition: color 0.2s, transform 0.2s; }
+        .rating-stars-container .star:hover,
+        .rating-stars-container .star.hovered,
+        .rating-stars-container .star.filled { color: var(--star-filled-color); }
+        .rating-stars-container .star:hover { transform: scale(1.2); color: var(--star-hover-color); }
+        
+        .rate-player-button {
+            background-color: var(--trexx-green); color: var(--text-dark-on-action);
+            padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 0.375rem;
+            text-transform: uppercase; font-weight: 600; cursor: pointer;
+            display: none; 
+            margin-top: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        .rate-player-button:hover { background-color: var(--trexx-cyan); } /* Mudado para ciano no hover */
+        .rating-feedback { font-size: 0.75rem; color: var(--text-medium); margin-top: 0.25rem; min-height: 1em; }
+
+    </style>
+</head>
+<body>
+    <div id="userHeader" class="user-header">
+        <span id="loggedInUserDisplay"></span> 
+        <button id="logoutButton">Sair</button>
+    </div>
+
+    <div class="top-container-for-mascot-title">
+        <div class="mascot-area">
+            <div class="mascot-image-container">
+                <img src="images/mascote_gg.png" alt="Mascote GG" 
+                     onerror="this.style.display='none'; document.getElementById('mascotFallbackText').style.display='flex';">
+                <span id="mascotFallbackText" style="display: none; font-family: 'Orbitron', sans-serif; font-size: 3.5rem; font-weight: 900; color: var(--background-dark);">GG</span>
+            </div>
+        </div>
+        <div class="text-center mb-6"> 
+        </br>
+            <span class="main-title-tagline" style="color: var(--trexx-cyan); text-shadow: 0 0 5px var(--trexx-green);">seu guia de squad!</span>
+        </div>
+    </div>
+
+    <div class="container-geral"> 
+        <div id="authSection" class="section active content-box">
+            <div id="loginFormContainer"> <h2 class="section-title">Login</h2> <form id="loginForm" class="auth-form"> <input type="text" id="loginUsername" placeholder="Nickname ou Email" required> <input type="password" id="loginPassword" placeholder="Senha Secreta" required> <button type="submit" class="btn">Entrar no Game!</button> </form> <p class="text-center mt-6">Novo por aqui? <a id="showRegisterLink" class="auth-link">Crie sua conta GG!</a></p> </div>
+            <div id="registerFormContainer" style="display: none;"> <h2 class="section-title">Criar Conta GG</h2> <form id="registerForm" class="auth-form"> <input type="text" id="registerUsername" placeholder="Seu Nickname" required> <input type="email" id="registerEmail" placeholder="Seu Melhor E-mail" required> <input type="password" id="registerPassword" placeholder="Crie uma Senha Forte" required> <button type="submit" class="btn">Registrar!</button> </form> <p class="text-center mt-6">Já tem conta? <a id="showLoginLink" class="auth-link">Faça Login!</a></p> </div>
+            <p id="authMessage" class="status-message error-text mt-4"></p>
+        </div>
+
+        <div id="userDashboardSection" class="section"> 
+            <div id="chatbotSection" class="content-box"> 
+                <h2 class="section-title">GG quer te conhecer!</h2>
+                <div id="chatWindow" class="chat-window"></div>
+                <div class="chat-input-container mt-4"> <input type="text" id="chatInput" placeholder="Responda para GG..."> <button id="sendChatButton">Enviar</button> </div>
+                <p id="chatbotStatus" class="status-message mt-2"></p>
+            </div>
+        
+            <div id="matchDisplaySection" class="section"> 
+                 <h1 class="section-title text-2xl">Seu Próximo Squad!</h1>
+                <div id="matchCard" class="match-card content-box"></div>
+                <div id="statusMessageMatch" class="status-message"></div>
+            </div>
+
+            <div id="mutualMatchesSection" class="section content-box" style="display: none;">
+                <h2 class="section-title">Conexões GG! 🎉</h2>
+                <div id="mutualMatchesList" class="space-y-3">
+                    <p class="text-center text-medium">Nenhum match mútuo ainda.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        const API_BASE_URL = 'http://127.0.0.1:5000';
+        const ADVANCE_DELAY = 1800;
+
+        const authSection = document.getElementById('authSection');
+        const userDashboardSection = document.getElementById('userDashboardSection');
+        const chatbotSection = document.getElementById('chatbotSection');
+        const matchDisplaySection = document.getElementById('matchDisplaySection');
+        const mutualMatchesSection = document.getElementById('mutualMatchesSection');
+        
+        const loginFormContainer = document.getElementById('loginFormContainer');
+        const registerFormContainer = document.getElementById('registerFormContainer');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const showRegisterLink = document.getElementById('showRegisterLink');
+        const showLoginLink = document.getElementById('showLoginLink');
+        const authMessageEl = document.getElementById('authMessage');
+        const userHeaderEl = document.getElementById('userHeader'); 
+        const loggedInUserDisplayEl = document.getElementById('loggedInUserDisplay');
+        const logoutButton = document.getElementById('logoutButton');
+        const chatWindow = document.getElementById('chatWindow');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatButton = document.getElementById('sendChatButton');
+        const chatbotStatusEl = document.getElementById('chatbotStatus');
+        const matchCardEl = document.getElementById('matchCard'); 
+        const statusMessageMatchEl = document.getElementById('statusMessageMatch');
+        const mutualMatchesListEl = document.getElementById('mutualMatchesList');
+        
+        let accessToken = localStorage.getItem('accessToken');
+        let currentUserId = null;
+        let userProfileData = null;
+        let receivedMatchList = []; 
+        let currentMatchIndexInList = 0; 
+        let isLoadingNextMatchCard = false;
+
+        function showSection(sectionIdToShow) {
+            if(authSection) authSection.classList.remove('active');
+            if(userDashboardSection) userDashboardSection.classList.remove('active'); 
+            
+            if(chatbotSection) chatbotSection.style.display = 'none';
+            if(matchDisplaySection) matchDisplaySection.style.display = 'none';
+            if(mutualMatchesSection) mutualMatchesSection.style.display = 'none'; 
+
+            if (sectionIdToShow === 'authSection') {
+                if(authSection) authSection.classList.add('active');
+                if(userHeaderEl) userHeaderEl.style.display = 'none'; 
+            } else { 
+                if(userDashboardSection) userDashboardSection.classList.add('active');
+                if(userHeaderEl) userHeaderEl.style.display = 'flex'; 
+
+                if (sectionIdToShow === 'chatbotSection' && chatbotSection) {
+                    chatbotSection.style.display = 'block';
+                } else if (sectionIdToShow === 'matchDisplaySection' && matchDisplaySection) {
+                    matchDisplaySection.style.display = 'block'; 
+                    if(mutualMatchesSection) mutualMatchesSection.style.display = 'block'; 
+                    fetchMutualMatches(); 
+                }
+            }
+        }
+        
+        if(showRegisterLink) showRegisterLink.addEventListener('click', (e) => { e.preventDefault(); if(loginFormContainer) loginFormContainer.style.display = 'none'; if(registerFormContainer) registerFormContainer.style.display = 'block'; if(authMessageEl) authMessageEl.textContent = ''; });
+        if(showLoginLink) showLoginLink.addEventListener('click', (e) => { e.preventDefault(); if(registerFormContainer) registerFormContainer.style.display = 'none'; if(loginFormContainer) loginFormContainer.style.display = 'block'; if(authMessageEl) authMessageEl.textContent = ''; });
+        if(registerForm) registerForm.addEventListener('submit', async (e) => { e.preventDefault(); if(authMessageEl) authMessageEl.textContent = 'Registrando...'; const username = document.getElementById('registerUsername').value; const email = document.getElementById('registerEmail').value; const password = document.getElementById('registerPassword').value; try { const response = await fetch(`${API_BASE_URL}/auth/register`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username, email, password }) }); const data = await response.json(); if (response.ok) { if(authMessageEl) { authMessageEl.textContent = data.msg + " Faça o login."; authMessageEl.className = 'status-message success-text mt-4'; } if(showLoginLink) showLoginLink.click(); } else { throw new Error(data.msg || "Erro ao registrar."); } } catch (error) { if(authMessageEl) { authMessageEl.textContent = error.message; authMessageEl.className = 'status-message error-text mt-4'; } } });
+        if(loginForm) loginForm.addEventListener('submit', async (e) => { e.preventDefault(); if(authMessageEl) authMessageEl.textContent = 'Entrando...'; const username = document.getElementById('loginUsername').value; const password = document.getElementById('loginPassword').value; try { const response = await fetch(`${API_BASE_URL}/auth/login`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username, password }) }); const data = await response.json(); if (response.ok && data.access_token) { accessToken = data.access_token; localStorage.setItem('accessToken', accessToken); if(authMessageEl) authMessageEl.textContent = ''; await fetchUserProfile(); } else { throw new Error(data.msg || "Erro ao fazer login."); } } catch (error) { if(authMessageEl) { authMessageEl.textContent = error.message; authMessageEl.className = 'status-message error-text mt-4'; } localStorage.removeItem('accessToken'); accessToken = null; } });
+        async function fetchUserProfile() {
+            if (!accessToken) { showSection('authSection'); return; }
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/me`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                if (response.status === 401) { handleLogout(); if(authMessageEl) authMessageEl.textContent = "Sessão expirada. Faça login."; return; }
+                if (!response.ok) { const errTxt = await response.text(); throw new Error("Erro ao buscar perfil.");}
+                const userData = await response.json();
+                currentUserId = userData.id; userProfileData = userData.profile;
+                if(loggedInUserDisplayEl) loggedInUserDisplayEl.textContent = `Logado como: ${userData.logged_in_as}`; 
+                if (userProfileData && userProfileData.profile_complete) {
+                    showSection('matchDisplaySection'); 
+                    await fetchAndDisplayMatchList(); 
+                } else {
+                    showSection('chatbotSection'); 
+                    startChatbot();
+                }
+            } catch (error) { console.error("Erro fetchUserProfile:", error); handleLogout(); if(authMessageEl) authMessageEl.textContent = error.message; }
+        }
+        function handleLogout() { localStorage.removeItem('accessToken'); accessToken = null; currentUserId = null; userProfileData = null; if(userHeaderEl) userHeaderEl.style.display = 'none'; if(loggedInUserDisplayEl) loggedInUserDisplayEl.textContent = ''; if(chatWindow) chatWindow.innerHTML = ''; if(matchCardEl && typeof ensureMatchCardStructureAndGetElements === 'function') { ensureMatchCardStructureAndGetElements(); matchCardEl.innerHTML = '<p class="loading-text text-center py-10">Faça login para ver os matches.</p>';} else if (matchCardEl) { matchCardEl.innerHTML = '<p class="loading-text text-center py-10">Faça login para ver os matches.</p>';} if(mutualMatchesListEl) mutualMatchesListEl.innerHTML = '<p class="text-center text-medium">Faça login para ver seus matches.</p>'; if(statusMessageMatchEl) statusMessageMatchEl.textContent = ''; if(chatbotStatusEl) chatbotStatusEl.textContent = ''; if(authMessageEl) { authMessageEl.textContent = "Você saiu."; authMessageEl.className = 'status-message success-text mt-4';} showSection('authSection'); if(loginFormContainer) loginFormContainer.style.display = 'block'; if(registerFormContainer) registerFormContainer.style.display = 'none'; }
+        if(logoutButton) logoutButton.addEventListener('click', handleLogout);
+        function appendMessage(message, type) { const messageDiv = document.createElement('div'); messageDiv.classList.add('chat-message', type === 'user' ? 'user-message' : 'bot-message'); messageDiv.textContent = message; if(chatWindow) chatWindow.appendChild(messageDiv); if(chatWindow) chatWindow.scrollTop = chatWindow.scrollHeight; }
+        async function sendChatMessage(messageText) { if (!messageText.trim() && chatWindow && chatWindow.children.length > 0) {}  else if (!accessToken) { appendMessage("Você precisa estar logado.", "bot"); return; } if (chatWindow && chatWindow.children.length > 0 || messageText.trim()) { appendMessage(messageText, 'user');} if(chatInput) chatInput.value = ''; if(chatbotStatusEl) chatbotStatusEl.textContent = 'GG está digitando...'; try { const response = await fetch(`${API_BASE_URL}/chatbot/message`, { method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`}, body: JSON.stringify({ message: messageText }) }); const data = await response.json(); if (!response.ok) throw new Error(data.bot_response || "Erro no chatbot."); appendMessage(data.bot_response, 'bot'); if(chatbotStatusEl) chatbotStatusEl.textContent = ''; if (data.profile_complete) { if(chatbotStatusEl) chatbotStatusEl.textContent = "GG diz: Perfil completo!"; setTimeout(async () => { await fetchUserProfile(); }, 2000); } } catch (error) { console.error("Erro sendChatMessage:", error); appendMessage(`GG bugou: ${error.message}`, 'bot'); if(chatbotStatusEl) chatbotStatusEl.textContent = 'Erro.'; } }
+        async function startChatbot() { if(chatWindow) chatWindow.innerHTML = ''; if(chatbotStatusEl) chatbotStatusEl.textContent = 'GG conectando...'; await sendChatMessage("");  }
+        if(sendChatButton) sendChatButton.addEventListener('click', () => sendChatMessage(chatInput.value));
+        if(chatInput) chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(chatInput.value); });
+        
+        function getMatchCardElements() { return { initial: document.getElementById('matchInitial'), name: document.getElementById('matchName'), game: document.getElementById('matchGame'), reasons: document.getElementById('matchReasons'), score: document.getElementById('matchScore'), actions: document.getElementById('matchActions'), acceptBtn: document.getElementById('acceptButton'), rejectBtn: document.getElementById('rejectButton') }; }
+        function ensureMatchCardStructureAndGetElements() { if (!document.getElementById('matchInitial') || !document.getElementById('matchActions')) { if(matchCardEl) matchCardEl.innerHTML = `<div class="match-profile-pic"><span id="matchInitial" class="loading-text">?</span></div><div class="text-center mb-4"><h2 id="matchName" class="text-2xl font-bold loading-text">Carregando...</h2><p id="matchGame" class="text-lg loading-text">Jogando: ...</p></div><div class="match-info-box"><h3>Por que Demos Match?</h3><p id="matchReasons" class="text-sm loading-text">Analisando...</p></div><div class="match-info-box"><h3>Nível de Compatibilidade</h3><p><span id="matchScore" class="text-xl font-bold loading-text">...</span></p></div><div id="matchActions" class="flex justify-around mt-4 w-full"><button id="rejectButton" class="btn btn-reject">Passar 👎</button><button id="acceptButton" class="btn btn-accept">Match! 👍</button></div>`; const elements = getMatchCardElements(); if(elements.acceptBtn) elements.acceptBtn.addEventListener('click', handleAcceptMatchCard); if(elements.rejectBtn) elements.rejectBtn.addEventListener('click', handleRejectMatchCard); } return getMatchCardElements();  }
+        function updateElementText(element, text, loadingClass = 'loading-text') { if (element) { element.textContent = text; element.classList.remove(loadingClass); } }
+        function setElementLoading(element, baseText = "...", loadingClass = 'loading-text') { if(element) { element.textContent = baseText; element.classList.add(loadingClass); } }
+        
+        function displayCurrentMatchFromList() {
+            const elements = ensureMatchCardStructureAndGetElements();
+            if (receivedMatchList && currentMatchIndexInList < receivedMatchList.length) {
+                const match = receivedMatchList[currentMatchIndexInList];
+                currentMatchCardData = match; 
+                const matchProfilePicInitialEl = document.querySelector('#matchCard .match-profile-pic span');
+                if(matchProfilePicInitialEl) updateElementText(matchProfilePicInitialEl, match.initial || (match.nome ? match.nome.charAt(0).toUpperCase() : '?'));
+                updateElementText(elements.name, match.nome || "Indisponível");
+                updateElementText(elements.game, `Jogando: ${match.jogo || "N/A"}`);
+                updateElementText(elements.reasons, match.razoes || "N/A");
+                updateElementText(elements.score, match.score ? match.score.toFixed(1) : 'N/A');
+                if (elements.actions) elements.actions.style.display = 'flex';
+                if (elements.acceptBtn) elements.acceptBtn.disabled = false;
+                if (elements.rejectBtn) elements.rejectBtn.disabled = false;
+                if(statusMessageMatchEl) statusMessageMatchEl.textContent = "";
+            } else {
+                displayMatchCardMessage("Aguarde, mais matches chegarão para você em breve! 😉");
+                currentMatchCardData = null; 
+            }
+            isLoadingNextMatchCard = false;
+        }
+        function displayMatchCardMessage(message, isError = false) { if(matchCardEl) matchCardEl.innerHTML = `<p class="text-center text-xl py-10 ${isError ? 'error-text' : 'loading-text'}">${message}</p>`; if(statusMessageMatchEl) statusMessageMatchEl.textContent = ""; isLoadingNextMatchCard = false; }
+        
+        async function fetchAndDisplayMatchList() {
+            if (isLoadingNextMatchCard || !accessToken) { if (!accessToken && matchDisplaySection && matchDisplaySection.style.display === 'block') { displayMatchCardMessage("Logue para ver matches.", true); } return; }
+            isLoadingNextMatchCard = true; 
+            ensureMatchCardStructureAndGetElements(); const elements = getMatchCardElements(); 
+            const matchProfilePicInitialEl = document.querySelector('#matchCard .match-profile-pic span');
+            if(matchProfilePicInitialEl) setElementLoading(matchProfilePicInitialEl, '?');
+            if(elements.name) setElementLoading(elements.name, 'Buscando...'); if(elements.game) setElementLoading(elements.game, 'Jogando: ...');
+            if(elements.reasons) setElementLoading(elements.reasons, 'Aguarde...'); if(elements.score) setElementLoading(elements.score, '...');
+            if (elements.actions) elements.actions.style.display = 'none';
+            if(statusMessageMatchEl) statusMessageMatchEl.textContent = "";
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/get_match`, { method: 'GET', headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' } });
+                if (!response.ok) { let errorMsg = `API Erro: ${response.status}`; try { const errorData = await response.json(); errorMsg = errorData.mensagem || errorData.msg || errorMsg; } catch (e) { const rawErrorText = await response.text().catch(() => ""); errorMsg = rawErrorText || errorMsg; } throw new Error(errorMsg); }
+                const responseData = await response.json(); 
+                if (responseData && responseData.matches && responseData.matches.length > 0) {  receivedMatchList = responseData.matches; currentMatchIndexInList = 0; displayCurrentMatchFromList(); } 
+                else if (responseData && responseData.mensagem && responseData.mensagem.startsWith("END_OF_MATCHES:")) {  receivedMatchList = []; currentMatchIndexInList = 0; displayMatchCardMessage("Aguarde, mais matches chegarão para você em breve! 😉");  } 
+                else { displayMatchCardMessage(responseData.mensagem || "Nenhum match encontrado.", false); }
+            } catch (error) { console.error("fetchMatchList - Catch Erro:", error.message); displayMatchCardMessage(`Oops! GG bugou: ${error.message}`, true); } 
+            finally { isLoadingNextMatchCard = false; }
+        }
+
+        function advanceToNextMatch() { 
+            currentMatchIndexInList++;
+            displayCurrentMatchFromList();
+        }
+
+        async function handleAcceptMatchCard() {
+            if (currentMatchIndexInList >= receivedMatchList.length || !receivedMatchList[currentMatchIndexInList] || isLoadingNextMatchCard) return;
+            const acceptedMatch = receivedMatchList[currentMatchIndexInList]; 
+            currentMatchCardData = acceptedMatch; 
+
+            if (!acceptedMatch || acceptedMatch.user_id === undefined) { setTimeout(advanceToNextMatch, ADVANCE_DELAY); return; }
+            
+            if(statusMessageMatchEl) statusMessageMatchEl.textContent = `Dando like em ${acceptedMatch.nome}...`;
+            if(statusMessageMatchEl) statusMessageMatchEl.className = 'status-message loading-text';
+            const elements = getMatchCardElements(); if(elements.acceptBtn) elements.acceptBtn.disabled = true; if(elements.rejectBtn) elements.rejectBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/action/match`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`},
+                    body: JSON.stringify({ liked_user_id: acceptedMatch.user_id })
+                });
+                const data = await response.json(); 
+                if (response.ok) {
+                    if (data.mutual_match) { if(statusMessageMatchEl) statusMessageMatchEl.textContent = `É UM MATCH MÚTUO com ${data.matched_with.nome_display}! 🎉 GG!`; if(statusMessageMatchEl) statusMessageMatchEl.className = 'status-message success-text'; fetchMutualMatches(); } 
+                    else { if(statusMessageMatchEl) statusMessageMatchEl.textContent = `Like enviado para ${acceptedMatch.nome}! GG na torcida! 😉`; if(statusMessageMatchEl) statusMessageMatchEl.className = 'status-message success-text'; }
+                } else { throw new Error(data.msg || "Erro ao registrar o like."); }
+            } catch (error) { console.error("Erro ao enviar like:", error); if(statusMessageMatchEl) statusMessageMatchEl.textContent = `Erro: ${error.message}`; if(statusMessageMatchEl) statusMessageMatchEl.className = 'status-message error-text'; } 
+            finally { setTimeout(advanceToNextMatch, ADVANCE_DELAY); }
+        }
+        function handleRejectMatchCard() { 
+            if (currentMatchIndexInList >= receivedMatchList.length || isLoadingNextMatchCard) return; 
+            const currentMatch = receivedMatchList[currentMatchIndexInList]; 
+            if (!currentMatch) return; 
+            currentMatchCardData = currentMatch; 
+            if(statusMessageMatchEl) statusMessageMatchEl.textContent = `Você passou ${currentMatch.nome}. Buscando...`; 
+            if(statusMessageMatchEl) statusMessageMatchEl.className = 'status-message error-text'; 
+            console.log("Match Rejeitado:", currentMatch); 
+            const elements = getMatchCardElements(); 
+            if(elements.acceptBtn) elements.acceptBtn.disabled = true; 
+            if(elements.rejectBtn) elements.rejectBtn.disabled = true; 
+            setTimeout(advanceToNextMatch, ADVANCE_DELAY); 
+        }
+        
+        async function fetchMutualMatches() { if (!accessToken) return; console.log("DEBUG: Buscando matches mútuos..."); try { const response = await fetch(`${API_BASE_URL}/api/get_mutual_matches`, { headers: { 'Authorization': `Bearer ${accessToken}` } }); if (!response.ok) { const errorData = await response.json().catch(() => ({})); throw new Error(errorData.msg || "Erro ao buscar matches mútuos."); } const data = await response.json(); console.log("DEBUG: Matches mútuos recebidos:", data.mutual_matches); displayMutualMatches(data.mutual_matches || []); } catch (error) { console.error("Erro ao buscar matches mútuos:", error); if(mutualMatchesListEl) mutualMatchesListEl.innerHTML = `<p class="text-center error-text">Erro ao carregar.</p>`; } }
+        function displayMutualMatches(matches) { 
+            if (!mutualMatchesListEl) return; 
+            mutualMatchesListEl.innerHTML = ''; 
+            if (matches.length === 0) { mutualMatchesListEl.innerHTML = '<p class="text-center text-medium">Nenhum match mútuo ainda.</p>'; return; } 
+            matches.forEach(match => { 
+                const itemDiv = document.createElement('div'); itemDiv.className = 'mutual-match-item'; 
+                
+                const headerDiv = document.createElement('div'); 
+                headerDiv.className = 'mutual-match-header';
+                headerDiv.onclick = () => { 
+                    const firstMessage = prompt(`GG diz: Deixe sua primeira mensagem para ${match.nome_display}!`);
+                    if (firstMessage && firstMessage.trim() !== "") {
+                        sendFirstMessageToMatch(match.user_id, match.nome_display, firstMessage);
+                    }
+                };
+
+                const picDiv = document.createElement('div'); picDiv.className = 'mutual-match-pic'; 
+                picDiv.textContent = match.nome_display ? match.nome_display.charAt(0).toUpperCase() : '?'; 
+                const infoDiv = document.createElement('div'); infoDiv.className = 'mutual-match-info'; 
+                infoDiv.innerHTML = `<h4>${match.nome_display || 'Jogador'}</h4><p>Jogo: ${match.jogo_principal || 'N/A'}</p>`; 
+                
+                headerDiv.appendChild(picDiv); 
+                headerDiv.appendChild(infoDiv);
+                itemDiv.appendChild(headerDiv);
+
+                const ratingAreaDiv = document.createElement('div');
+                ratingAreaDiv.className = 'rating-area mt-2 w-full';
+
+                const starsContainer = document.createElement('div');
+                starsContainer.className = 'rating-stars-container';
+                starsContainer.dataset.ratedUserId = match.user_id; 
+                starsContainer.dataset.gamePlayed = match.jogo_principal; 
+                
+                let currentRating = 0; 
+
+                for (let i = 1; i <= 5; i++) {
+                    const star = document.createElement('i');
+                    star.className = 'fas fa-star star'; 
+                    star.dataset.value = i;
+                    star.addEventListener('mouseover', () => { highlightStars(starsContainer, i, true); });
+                    star.addEventListener('mouseout', () => { highlightStars(starsContainer, currentRating, false); });
+                    star.addEventListener('click', () => {
+                        currentRating = i;
+                        highlightStars(starsContainer, i, false); 
+                        const rateButton = ratingAreaDiv.querySelector('.rate-player-button');
+                        if(rateButton) rateButton.style.display = 'inline-block';
+                        const feedbackEl = ratingAreaDiv.querySelector('.rating-feedback');
+                        if(feedbackEl) feedbackEl.textContent = `Você selecionou ${i} estrela(s).`;
+                    });
+                    starsContainer.appendChild(star);
+                }
+                ratingAreaDiv.appendChild(starsContainer);
+
+                const rateButton = document.createElement('button');
+                rateButton.className = 'rate-player-button btn'; 
+                rateButton.textContent = 'Avaliar';
+                rateButton.style.backgroundColor = 'var(--gg-accent-color)'; 
+                rateButton.style.color = 'var(--background-dark)';
+                rateButton.onclick = async () => {
+                    if (currentRating > 0) {
+                        await submitRating(match.user_id, currentRating, match.jogo_principal, ratingAreaDiv);
+                        currentRating = 0; 
+                        rateButton.style.display = 'none'; 
+                        starsContainer.querySelectorAll('.star').forEach(s => {
+                            s.style.pointerEvents = 'none'; 
+                            s.style.opacity = '0.5';
+                        });
+                    }
+                };
+                ratingAreaDiv.appendChild(rateButton);
+                const ratingFeedbackEl = document.createElement('p');
+                ratingFeedbackEl.className = 'rating-feedback';
+                ratingAreaDiv.appendChild(ratingFeedbackEl);
+
+                itemDiv.appendChild(ratingAreaDiv);
+                mutualMatchesListEl.appendChild(itemDiv); 
+            }); 
+        }
+
+        function highlightStars(container, rating, isHover) {
+            const stars = container.querySelectorAll('.star');
+            stars.forEach(star => {
+                star.classList.remove('filled', 'hovered');
+                star.style.color = 'var(--star-default-color)'; 
+                if (parseInt(star.dataset.value) <= rating) {
+                    star.classList.add(isHover ? 'hovered' : 'filled');
+                    star.style.color = isHover ? 'var(--star-hover-color)' : 'var(--star-filled-color)';
+                }
+            });
+        }
+
+        async function submitRating(ratedUserId, ratingValue, gamePlayed, ratingAreaDiv) {
+            if (!accessToken) { alert("Você precisa estar logado."); return; }
+            const feedbackEl = ratingAreaDiv.querySelector('.rating-feedback');
+            if(feedbackEl) feedbackEl.textContent = "Enviando avaliação...";
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/rate_player`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`},
+                    body: JSON.stringify({ rated_user_id: ratedUserId, rating: ratingValue, game_played: gamePlayed })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    if(feedbackEl) feedbackEl.textContent = data.msg || "Avaliação enviada!";
+                } else {
+                    throw new Error(data.msg || "Erro ao enviar avaliação.");
+                }
+            } catch (error) {
+                console.error("Erro ao enviar avaliação:", error);
+                if(feedbackEl) feedbackEl.textContent = `Erro: ${error.message}`;
+            }
+        }
+
+        async function sendFirstMessageToMatch(receiverId, receiverName, messageContent) {
+            if (!accessToken) { alert("Você precisa estar logado para enviar mensagens."); return; }
+            let originalStatusMessage = ""; let originalStatusClass = "";
+            if(statusMessageMatchEl){ originalStatusMessage = statusMessageMatchEl.textContent; originalStatusClass = statusMessageMatchEl.className; statusMessageMatchEl.textContent = `Enviando msg para ${receiverName}...`; statusMessageMatchEl.className = 'status-message loading-text';}
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/send_message`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`},
+                    body: JSON.stringify({ receiver_user_id: receiverId, content: messageContent })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    alert(`GG diz: Sua mensagem para ${receiverName} foi "enviada" (simulado)! Conteúdo: "${data.sent_message}"`);
+                    if(statusMessageMatchEl) { statusMessageMatchEl.textContent = `Mensagem "enviada" para ${receiverName}!`; statusMessageMatchEl.className = 'status-message success-text'; setTimeout(() => { if(statusMessageMatchEl.textContent === `Mensagem "enviada" para ${receiverName}!`) { statusMessageMatchEl.textContent = originalStatusMessage; statusMessageMatchEl.className = originalStatusClass;}}, 3000); }
+                } else { throw new Error(data.msg || "Erro ao enviar mensagem."); }
+            } catch (error) {
+                console.error("Erro ao enviar primeira mensagem:", error);
+                alert(`Oops! GG não conseguiu enviar sua mensagem para ${receiverName}: ${error.message}`);
+                if(statusMessageMatchEl) { statusMessageMatchEl.textContent = `Falha ao enviar msg: ${error.message}`; statusMessageMatchEl.className = 'status-message error-text'; setTimeout(() => { if(statusMessageMatchEl.textContent === `Falha ao enviar msg: ${error.message}`) { statusMessageMatchEl.textContent = originalStatusMessage; statusMessageMatchEl.className = originalStatusClass;}}, 3000); }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (accessToken) { fetchUserProfile(); } 
+            else { showSection('authSection'); }
+        });
+    </script>
+</body>
+</html>
